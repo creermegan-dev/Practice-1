@@ -1,6 +1,13 @@
 const productList = document.getElementById("product-list");
 const cartItems = document.getElementById("cart-items");
 const orderTotal = document.getElementById("order-total");
+const itemSelectionView = document.getElementById("item-selection-view");
+const orderSummary = document.getElementById("order-summary");
+const summaryItems = document.getElementById("summary-items");
+const summaryTotal = document.getElementById("summary-total");
+const summaryFeedback = document.getElementById("summary-feedback");
+const proceedButton = document.getElementById("proceed-button");
+const backButton = document.getElementById("back-to-items");
 const cart = new Map();
 
 function formatPrice(amountInCents) {
@@ -111,6 +118,63 @@ function renderCart() {
   }
 
   orderTotal.textContent = formatPrice(totalInCents);
+  summaryFeedback.hidden = true;
+  summaryFeedback.textContent = "";
+}
+
+function createSummaryItem(product) {
+  const item = document.createElement("li");
+  item.className = "summary-item";
+
+  const name = document.createElement("span");
+  name.className = "summary-product-name";
+  name.textContent = product.name;
+
+  const quantity = document.createElement("span");
+  quantity.textContent = `Quantity: ${product.quantity}`;
+
+  const unitPrice = document.createElement("span");
+  unitPrice.textContent = `Unit price: ${formatPrice(product.unitPriceInCents)}`;
+
+  const subtotal = document.createElement("span");
+  subtotal.className = "summary-item-subtotal";
+  subtotal.textContent = `Subtotal: ${formatPrice(product.unitPriceInCents * product.quantity)}`;
+
+  item.append(name, quantity, unitPrice, subtotal);
+  return item;
+}
+
+function renderOrderSummary() {
+  summaryItems.replaceChildren();
+
+  let totalInCents = 0;
+
+  for (const product of cart.values()) {
+    totalInCents += product.unitPriceInCents * product.quantity;
+    summaryItems.append(createSummaryItem(product));
+  }
+
+  summaryTotal.textContent = formatPrice(totalInCents);
+}
+
+function showOrderSummary() {
+  if (cart.size === 0) {
+    summaryFeedback.textContent =
+      "Your order is empty. Select at least one item before continuing.";
+    summaryFeedback.hidden = false;
+    return;
+  }
+
+  renderOrderSummary();
+  itemSelectionView.hidden = true;
+  orderSummary.hidden = false;
+  document.getElementById("summary-heading").focus();
+}
+
+function returnToItemSelection() {
+  orderSummary.hidden = true;
+  itemSelectionView.hidden = false;
+  proceedButton.focus();
 }
 
 productList.addEventListener("click", (event) => {
@@ -148,3 +212,6 @@ cartItems.addEventListener("click", (event) => {
 
   renderCart();
 });
+
+proceedButton.addEventListener("click", showOrderSummary);
+backButton.addEventListener("click", returnToItemSelection);
