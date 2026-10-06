@@ -93,6 +93,13 @@
           <button class="proceed-button" id="proceed-button" type="button">
             Proceed to Order Summary
           </button>
+          <button
+            class="secondary-button transaction-history-open"
+            id="show-transaction-history"
+            type="button"
+          >
+            Transaction History
+          </button>
         </aside>
       </div>
 
@@ -357,6 +364,90 @@
           type="button"
         >
           New Transaction
+        </button>
+      </section>
+
+      <section
+        class="transaction-history"
+        id="transaction-history"
+        aria-labelledby="transaction-history-heading"
+        hidden
+      >
+        <h2 id="transaction-history-heading" tabindex="-1">
+          Transaction History
+        </h2>
+        <div class="history-layout">
+          <ul
+            class="history-list"
+            id="history-list"
+            aria-label="Completed transactions"
+          >
+            <li class="history-empty">No transactions yet.</li>
+          </ul>
+          <section
+            class="history-details"
+            aria-label="Selected transaction details"
+          >
+            <p class="history-prompt" id="history-prompt">
+              Select a transaction to view its details.
+            </p>
+            <div id="history-detail-content" hidden>
+              <dl class="receipt-details">
+                <div>
+                  <dt>Transaction reference</dt>
+                  <dd id="history-reference"></dd>
+                </div>
+                <div>
+                  <dt>Date and time</dt>
+                  <dd id="history-date"></dd>
+                </div>
+              </dl>
+              <div class="receipt-table-wrap">
+                <table class="receipt-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Product</th>
+                      <th scope="col">Quantity</th>
+                      <th scope="col">Unit price</th>
+                      <th scope="col">Subtotal</th>
+                    </tr>
+                  </thead>
+                  <tbody id="history-items"></tbody>
+                  <tfoot>
+                    <tr>
+                      <th scope="row" colspan="3">Total</th>
+                      <td id="history-total"></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+              <dl class="receipt-details">
+                <div>
+                  <dt>Payment method</dt>
+                  <dd id="history-method"></dd>
+                </div>
+                <div>
+                  <dt>Amount paid</dt>
+                  <dd id="history-amount-paid"></dd>
+                </div>
+                <div>
+                  <dt>Change</dt>
+                  <dd id="history-change"></dd>
+                </div>
+                <div>
+                  <dt>Payment status</dt>
+                  <dd id="history-status"></dd>
+                </div>
+              </dl>
+            </div>
+          </section>
+        </div>
+        <button
+          class="secondary-button history-back-button"
+          id="back-from-history"
+          type="button"
+        >
+          Back
         </button>
       </section>
     </main>
