@@ -269,6 +269,10 @@
         <p class="success-message">Your payment has been confirmed.</p>
         <dl class="payment-receipt">
           <div>
+            <dt>Transaction reference</dt>
+            <dd id="success-reference"></dd>
+          </div>
+          <div>
             <dt>Payment method</dt>
             <dd id="success-method"></dd>
           </div>
@@ -285,6 +289,75 @@
             <dd id="success-change"></dd>
           </div>
         </dl>
+        <button
+          class="proceed-button success-receipt-button"
+          id="view-receipt"
+          type="button"
+        >
+          View Receipt
+        </button>
+      </section>
+
+      <section
+        class="digital-receipt"
+        id="digital-receipt"
+        aria-labelledby="receipt-heading"
+        hidden
+      >
+        <div class="receipt-heading">
+          <h2 id="receipt-heading" tabindex="-1">Digital Receipt</h2>
+          <p class="receipt-status">Payment Successful</p>
+        </div>
+        <dl class="receipt-details">
+          <div>
+            <dt>Transaction reference</dt>
+            <dd id="receipt-reference"></dd>
+          </div>
+          <div>
+            <dt>Transaction date</dt>
+            <dd id="receipt-date"></dd>
+          </div>
+        </dl>
+        <div class="receipt-table-wrap">
+          <table class="receipt-table">
+            <thead>
+              <tr>
+                <th scope="col">Product</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Unit price</th>
+                <th scope="col">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody id="receipt-items"></tbody>
+            <tfoot>
+              <tr>
+                <th scope="row" colspan="3">Total</th>
+                <td id="receipt-total"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <dl class="receipt-details">
+          <div>
+            <dt>Payment method</dt>
+            <dd id="receipt-method"></dd>
+          </div>
+          <div>
+            <dt>Amount paid</dt>
+            <dd id="receipt-amount-paid"></dd>
+          </div>
+          <div>
+            <dt>Change</dt>
+            <dd id="receipt-change"></dd>
+          </div>
+        </dl>
+        <button
+          class="proceed-button new-transaction-button"
+          id="new-transaction"
+          type="button"
+        >
+          New Transaction
+        </button>
       </section>
     </main>
   </body>
