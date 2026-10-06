@@ -11,6 +11,8 @@ const backButton = document.getElementById("back-to-items");
 const continueToPaymentButton = document.getElementById("continue-to-payment");
 const paymentView = document.getElementById("payment-view");
 const paymentSuccessView = document.getElementById("payment-success");
+const digitalReceiptView = document.getElementById("digital-receipt");
+const receiptItems = document.getElementById("receipt-items");
 const paymentOptions = document.querySelectorAll(".payment-option");
 const paymentPanels = {
   cash: document.getElementById("cash-payment-panel"),
@@ -25,6 +27,8 @@ const cardProcessingMessage = document.getElementById(
 );
 const processCardButton = document.getElementById("process-card-payment");
 const backToSummaryButton = document.getElementById("back-to-summary");
+const viewReceiptButton = document.getElementById("view-receipt");
+const newTransactionButton = document.getElementById("new-transaction");
 const cart = new Map();
 const paymentDetails = {
   method: null,
@@ -32,9 +36,17 @@ const paymentDetails = {
   changeInCents: 0,
 };
 let cardProcessingTimer = null;
+let completedTransaction = null;
+let transactionSequence = 0;
 
 function formatPrice(amountInCents) {
   return `₱${(amountInCents / 100).toFixed(2)}`;
+}
+
+function generateTransactionReference() {
+  transactionSequence += 1;
+  const randomPart = Math.random().toString(36).slice(2, 8).toUpperCase();
+  return `POS-${Date.now()}-${transactionSequence}-${randomPart}`;
 }
 
 function addProduct(productCard) {
@@ -255,9 +267,21 @@ function completePayment(method, amountPaidInCents, changeInCents) {
   paymentDetails.amountPaidInCents = amountPaidInCents;
   paymentDetails.changeInCents = changeInCents;
 
+  completedTransaction = {
+    reference: generateTransactionReference(),
+    date: new Date(),
+    items: Array.from(cart.values(), (product) => ({ ...product })),
+    totalInCents: calculateCartTotalInCents(),
+    method,
+    amountPaidInCents,
+    changeInCents,
+  };
+
+  document.getElementById("success-reference").textContent =
+    completedTransaction.reference;
   document.getElementById("success-method").textContent = method;
   document.getElementById("success-total").textContent = formatPrice(
-    calculateCartTotalInCents(),
+    completedTransaction.totalInCents,
   );
   document.getElementById("success-amount-paid").textContent =
     formatPrice(amountPaidInCents);
@@ -267,6 +291,121 @@ function completePayment(method, amountPaidInCents, changeInCents) {
   paymentView.hidden = true;
   paymentSuccessView.hidden = false;
   document.getElementById("payment-success-heading").focus();
+}
+
+function createReceiptRow(product) {
+  const row = document.createElement("tr");
+  const productName = document.createElement("th");
+  productName.scope = "row";
+  productName.textContent = product.name;
+
+  const quantity = document.createElement("td");
+  quantity.textContent = String(product.quantity);
+
+  const unitPrice = document.createElement("td");
+  unitPrice.textContent = formatPrice(product.unitPriceInCents);
+
+  const subtotal = document.createElement("td");
+  subtotal.textContent = formatPrice(
+    product.unitPriceInCents * product.quantity,
+  );
+
+  row.append(productName, quantity, unitPrice, subtotal);
+  return row;
+}
+
+function renderReceipt() {
+  if (!completedTransaction) {
+    return;
+  }
+
+  document.getElementById("receipt-reference").textContent =
+    completedTransaction.reference;
+  document.getElementById("receipt-date").textContent =
+    completedTransaction.date.toLocaleString();
+  document.getElementById("receipt-total").textContent = formatPrice(
+    completedTransaction.totalInCents,
+  );
+  document.getElementById("receipt-method").textContent =
+    completedTransaction.method;
+  document.getElementById("receipt-amount-paid").textContent = formatPrice(
+    completedTransaction.amountPaidInCents,
+  );
+  document.getElementById("receipt-change").textContent = formatPrice(
+    completedTransaction.changeInCents,
+  );
+
+  receiptItems.replaceChildren();
+
+  for (const product of completedTransaction.items) {
+    receiptItems.append(createReceiptRow(product));
+  }
+}
+
+function showReceipt() {
+  renderReceipt();
+
+  if (!completedTransaction) {
+    return;
+  }
+
+  paymentSuccessView.hidden = true;
+  digitalReceiptView.hidden = false;
+  document.getElementById("receipt-heading").focus();
+}
+
+function startNewTransaction() {
+  cancelCardProcessing();
+  cart.clear();
+  paymentDetails.method = null;
+  paymentDetails.amountPaidInCents = 0;
+  paymentDetails.changeInCents = 0;
+  completedTransaction = null;
+
+  renderCart();
+  updatePaymentAmounts();
+  summaryItems.replaceChildren();
+  summaryTotal.textContent = formatPrice(0);
+  cashPaymentInput.value = "";
+  cashFeedback.textContent = "";
+  cashFeedback.hidden = true;
+  cardProcessingMessage.textContent = "";
+  cardProcessingMessage.hidden = true;
+  processCardButton.disabled = false;
+  processCardButton.textContent = "Process Payment";
+
+  for (const option of paymentOptions) {
+    option.setAttribute("aria-pressed", "false");
+    option.disabled = false;
+  }
+
+  for (const panel of Object.values(paymentPanels)) {
+    panel.hidden = true;
+  }
+
+  for (const id of [
+    "success-reference",
+    "success-method",
+    "success-total",
+    "success-amount-paid",
+    "success-change",
+    "receipt-reference",
+    "receipt-date",
+    "receipt-total",
+    "receipt-method",
+    "receipt-amount-paid",
+    "receipt-change",
+  ]) {
+    document.getElementById(id).textContent = "";
+  }
+
+  receiptItems.replaceChildren();
+  digitalReceiptView.hidden = true;
+  paymentSuccessView.hidden = true;
+  paymentView.hidden = true;
+  orderSummary.hidden = true;
+  itemSelectionView.hidden = false;
+  productList.querySelector(".product-card").focus();
 }
 
 function handleCashPayment(event) {
@@ -397,6 +536,8 @@ document.getElementById("confirm-qr-payment").addEventListener("click", () => {
   }
 });
 processCardButton.addEventListener("click", processCardPayment);
+viewReceiptButton.addEventListener("click", showReceipt);
+newTransactionButton.addEventListener("click", startNewTransaction);
 
 for (const option of paymentOptions) {
   option.addEventListener("click", () => {

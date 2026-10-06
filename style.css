@@ -56,7 +56,8 @@ button {
 .order-cart h2,
 .order-summary h2,
 .payment-view h2,
-.payment-success h2 {
+.payment-success h2,
+.digital-receipt h2 {
   margin: 0;
   font-size: 1.4rem;
   line-height: 1.3;
@@ -66,6 +67,7 @@ button {
 #order-summary[hidden],
 #payment-view[hidden],
 #payment-success[hidden],
+#digital-receipt[hidden],
 .payment-panel[hidden] {
   display: none;
 }
@@ -280,7 +282,8 @@ button {
 }
 
 .payment-view,
-.payment-success {
+.payment-success,
+.digital-receipt {
   width: min(900px, calc(100% - 48px));
   margin: 32px auto;
   padding: 28px;
@@ -423,6 +426,89 @@ button {
   border-top-color: var(--brand);
 }
 
+.success-receipt-button,
+.new-transaction-button {
+  margin-top: 22px;
+}
+
+.receipt-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.receipt-status {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 4px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  font-weight: 700;
+}
+
+.receipt-details {
+  margin: 0;
+}
+
+.receipt-details div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.receipt-details dt {
+  color: var(--muted);
+}
+
+.receipt-details dd {
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+}
+
+.receipt-table-wrap {
+  overflow-x: auto;
+}
+
+.receipt-table {
+  width: 100%;
+  min-width: 560px;
+  margin: 20px 0;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.receipt-table th,
+.receipt-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.receipt-table th:not(:first-child),
+.receipt-table td:not(:first-child) {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.receipt-table tfoot {
+  font-size: 1.1rem;
+}
+
+.receipt-table tfoot th,
+.receipt-table tfoot td {
+  border-top: 2px solid var(--border);
+  border-bottom: 0;
+}
+
+.receipt-table tfoot td {
+  color: var(--brand);
+  font-weight: 700;
+}
+
 .success-message {
   margin: 10px 0 20px;
   color: var(--muted);
@@ -500,10 +586,16 @@ button {
   }
 
   .payment-view,
-  .payment-success {
+  .payment-success,
+  .digital-receipt {
     width: calc(100% - 32px);
     margin: 22px auto;
     padding: 20px;
+  }
+
+  .receipt-heading {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .payment-options {
