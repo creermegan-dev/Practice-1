@@ -14,86 +14,86 @@
 
     <main>
       <div class="pos-layout" id="item-selection-view">
-      <section class="item-selection" aria-labelledby="selection-heading">
-        <h2 id="selection-heading">Select an item</h2>
-        <p class="selection-instruction">
-          Tap a product to add it to your order.
-        </p>
+        <section class="item-selection" aria-labelledby="selection-heading">
+          <h2 id="selection-heading">Select an item</h2>
+          <p class="selection-instruction">
+            Tap a product to add it to your order.
+          </p>
 
-        <div class="product-grid" id="product-list">
-          <button
-            class="product-card"
-            id="product-coffee"
-            type="button"
-            data-product-id="coffee"
-            data-price="45.00"
-          >
-            <span class="product-name">Coffee</span>
-            <span class="product-price">₱45.00</span>
-          </button>
-          <button
-            class="product-card"
-            id="product-sandwich"
-            type="button"
-            data-product-id="sandwich"
-            data-price="50.00"
-          >
-            <span class="product-name">Sandwich</span>
-            <span class="product-price">₱50.00</span>
-          </button>
-          <button
-            class="product-card"
-            id="product-soft-drink"
-            type="button"
-            data-product-id="soft-drink"
-            data-price="35.00"
-          >
-            <span class="product-name">Soft Drink</span>
-            <span class="product-price">₱35.00</span>
-          </button>
-          <button
-            class="product-card"
-            id="product-cookies"
-            type="button"
-            data-product-id="cookies"
-            data-price="25.00"
-          >
-            <span class="product-name">Cookies</span>
-            <span class="product-price">₱25.00</span>
-          </button>
-          <button
-            class="product-card"
-            id="product-bottled-water"
-            type="button"
-            data-product-id="bottled-water"
-            data-price="20.00"
-          >
-            <span class="product-name">Bottled Water</span>
-            <span class="product-price">₱20.00</span>
-          </button>
-          <button
-            class="product-card"
-            id="product-chocolate"
-            type="button"
-            data-product-id="chocolate"
-            data-price="25.00"
-          >
-            <span class="product-name">Chocolate</span>
-            <span class="product-price">₱25.00</span>
-          </button>
-        </div>
-      </section>
+          <div class="product-grid" id="product-list">
+            <button
+              class="product-card"
+              id="product-coffee"
+              type="button"
+              data-product-id="coffee"
+              data-price="45.00"
+            >
+              <span class="product-name">Coffee</span>
+              <span class="product-price">₱45.00</span>
+            </button>
+            <button
+              class="product-card"
+              id="product-sandwich"
+              type="button"
+              data-product-id="sandwich"
+              data-price="50.00"
+            >
+              <span class="product-name">Sandwich</span>
+              <span class="product-price">₱50.00</span>
+            </button>
+            <button
+              class="product-card"
+              id="product-soft-drink"
+              type="button"
+              data-product-id="soft-drink"
+              data-price="35.00"
+            >
+              <span class="product-name">Soft Drink</span>
+              <span class="product-price">₱35.00</span>
+            </button>
+            <button
+              class="product-card"
+              id="product-cookies"
+              type="button"
+              data-product-id="cookies"
+              data-price="25.00"
+            >
+              <span class="product-name">Cookies</span>
+              <span class="product-price">₱25.00</span>
+            </button>
+            <button
+              class="product-card"
+              id="product-bottled-water"
+              type="button"
+              data-product-id="bottled-water"
+              data-price="20.00"
+            >
+              <span class="product-name">Bottled Water</span>
+              <span class="product-price">₱20.00</span>
+            </button>
+            <button
+              class="product-card"
+              id="product-chocolate"
+              type="button"
+              data-product-id="chocolate"
+              data-price="25.00"
+            >
+              <span class="product-name">Chocolate</span>
+              <span class="product-price">₱25.00</span>
+            </button>
+          </div>
+        </section>
 
-      <aside class="order-cart" aria-labelledby="cart-heading">
-        <h2 id="cart-heading">Your Order</h2>
-        <ul class="cart-items" id="cart-items" aria-live="polite">
-          <li class="cart-empty" id="cart-empty">No items selected.</li>
-        </ul>
-        <p class="cart-total">Total: <span id="order-total">₱0.00</span></p>
-        <button class="proceed-button" id="proceed-button" type="button">
-          Proceed to Order Summary
-        </button>
-      </aside>
+        <aside class="order-cart" aria-labelledby="cart-heading">
+          <h2 id="cart-heading">Your Order</h2>
+          <ul class="cart-items" id="cart-items" aria-live="polite">
+            <li class="cart-empty" id="cart-empty">No items selected.</li>
+          </ul>
+          <p class="cart-total">Total: <span id="order-total">₱0.00</span></p>
+          <button class="proceed-button" id="proceed-button" type="button">
+            Proceed to Order Summary
+          </button>
+        </aside>
       </div>
 
       <section
@@ -108,7 +108,12 @@
         <p class="summary-total">
           Total: <span id="summary-total">₱0.00</span>
         </p>
-        <p class="summary-feedback" id="summary-feedback" role="status" hidden></p>
+        <p
+          class="summary-feedback"
+          id="summary-feedback"
+          role="status"
+          hidden
+        ></p>
         <div class="summary-actions">
           <button class="secondary-button" id="back-to-items" type="button">
             Back
@@ -117,6 +122,169 @@
             Continue to Payment
           </button>
         </div>
+      </section>
+
+      <section
+        class="payment-view"
+        id="payment-view"
+        aria-labelledby="payment-heading"
+        hidden
+      >
+        <h2 id="payment-heading" tabindex="-1">Payment Method</h2>
+        <button
+          class="secondary-button payment-back-button"
+          id="back-to-summary"
+          type="button"
+        >
+          Back
+        </button>
+        <p class="payment-instruction">Choose how you would like to pay.</p>
+
+        <div class="payment-options" role="group" aria-label="Payment methods">
+          <button
+            class="payment-option"
+            type="button"
+            data-payment-method="cash"
+            aria-pressed="false"
+          >
+            Cash
+          </button>
+          <button
+            class="payment-option"
+            type="button"
+            data-payment-method="qr"
+            aria-pressed="false"
+          >
+            QR Payment
+          </button>
+          <button
+            class="payment-option"
+            type="button"
+            data-payment-method="card"
+            aria-pressed="false"
+          >
+            Credit/Debit Card
+          </button>
+        </div>
+
+        <p class="payment-selection-prompt" id="payment-selection-prompt">
+          Select a payment method to continue.
+        </p>
+
+        <section
+          class="payment-panel"
+          id="cash-payment-panel"
+          aria-labelledby="cash-heading"
+          hidden
+        >
+          <h3 id="cash-heading">Cash Payment</h3>
+          <p class="payment-amount">
+            Amount due: <strong id="cash-total">₱0.00</strong>
+          </p>
+          <form class="cash-form" id="cash-payment-form" novalidate>
+            <label for="amount-paid">Amount paid</label>
+            <input
+              id="amount-paid"
+              name="amount-paid"
+              type="number"
+              min="0"
+              step="0.01"
+              inputmode="decimal"
+              autocomplete="off"
+              aria-describedby="cash-feedback"
+              required
+            />
+            <p
+              class="payment-feedback"
+              id="cash-feedback"
+              role="status"
+              hidden
+            ></p>
+            <button class="proceed-button" type="submit">Pay Now</button>
+          </form>
+        </section>
+
+        <section
+          class="payment-panel"
+          id="qr-payment-panel"
+          aria-labelledby="qr-heading"
+          hidden
+        >
+          <h3 id="qr-heading">QR Payment</h3>
+          <p class="payment-amount">
+            Amount to pay: <strong id="qr-total">₱0.00</strong>
+          </p>
+          <div
+            class="qr-placeholder"
+            role="img"
+            aria-label="Simulated QR code placeholder"
+          >
+            <span>QR CODE</span>
+            <small>Campus Store</small>
+          </div>
+          <p class="payment-instruction">
+            Scan the QR code with your payment app.
+          </p>
+          <button class="proceed-button" id="confirm-qr-payment" type="button">
+            Confirm Payment
+          </button>
+        </section>
+
+        <section
+          class="payment-panel"
+          id="card-payment-panel"
+          aria-labelledby="card-heading"
+          hidden
+        >
+          <h3 id="card-heading">Credit/Debit Card</h3>
+          <p class="payment-amount">
+            Amount due: <strong id="card-total">₱0.00</strong>
+          </p>
+          <p class="payment-instruction">
+            Please tap, insert, or swipe your card.
+          </p>
+          <p
+            class="payment-feedback"
+            id="card-processing-message"
+            role="status"
+            hidden
+          ></p>
+          <button
+            class="proceed-button"
+            id="process-card-payment"
+            type="button"
+          >
+            Process Payment
+          </button>
+        </section>
+      </section>
+
+      <section
+        class="payment-success"
+        id="payment-success"
+        aria-labelledby="payment-success-heading"
+        hidden
+      >
+        <h2 id="payment-success-heading" tabindex="-1">Payment Successful</h2>
+        <p class="success-message">Your payment has been confirmed.</p>
+        <dl class="payment-receipt">
+          <div>
+            <dt>Payment method</dt>
+            <dd id="success-method"></dd>
+          </div>
+          <div>
+            <dt>Total amount</dt>
+            <dd id="success-total"></dd>
+          </div>
+          <div>
+            <dt>Amount paid</dt>
+            <dd id="success-amount-paid"></dd>
+          </div>
+          <div>
+            <dt>Change</dt>
+            <dd id="success-change"></dd>
+          </div>
+        </dl>
       </section>
     </main>
   </body>
