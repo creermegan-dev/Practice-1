@@ -29,7 +29,17 @@ const processCardButton = document.getElementById("process-card-payment");
 const backToSummaryButton = document.getElementById("back-to-summary");
 const viewReceiptButton = document.getElementById("view-receipt");
 const newTransactionButton = document.getElementById("new-transaction");
+const transactionHistoryButton = document.getElementById(
+  "show-transaction-history",
+);
+const transactionHistoryView = document.getElementById("transaction-history");
+const historyList = document.getElementById("history-list");
+const historyPrompt = document.getElementById("history-prompt");
+const historyDetailContent = document.getElementById("history-detail-content");
+const historyItems = document.getElementById("history-items");
+const backFromHistoryButton = document.getElementById("back-from-history");
 const cart = new Map();
+const transactionHistory = [];
 const paymentDetails = {
   method: null,
   amountPaidInCents: 0,
@@ -275,7 +285,9 @@ function completePayment(method, amountPaidInCents, changeInCents) {
     method,
     amountPaidInCents,
     changeInCents,
+    status: "Payment Successful",
   };
+  transactionHistory.push(completedTransaction);
 
   document.getElementById("success-reference").textContent =
     completedTransaction.reference;
@@ -408,6 +420,85 @@ function startNewTransaction() {
   productList.querySelector(".product-card").focus();
 }
 
+function renderTransactionHistory() {
+  historyList.replaceChildren();
+  historyPrompt.hidden = false;
+  historyPrompt.textContent = "Select a transaction to view its details.";
+  historyDetailContent.hidden = true;
+
+  if (transactionHistory.length === 0) {
+    const emptyMessage = document.createElement("li");
+    emptyMessage.className = "history-empty";
+    emptyMessage.textContent = "No transactions yet.";
+    historyList.append(emptyMessage);
+    return;
+  }
+
+  for (let index = transactionHistory.length - 1; index >= 0; index -= 1) {
+    const transaction = transactionHistory[index];
+    const listItem = document.createElement("li");
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "history-transaction-button";
+    button.dataset.reference = transaction.reference;
+
+    const reference = document.createElement("span");
+    reference.className = "history-transaction-reference";
+    reference.textContent = transaction.reference;
+
+    const date = document.createElement("span");
+    date.className = "history-transaction-date";
+    date.textContent = transaction.date.toLocaleString();
+
+    const total = document.createElement("span");
+    total.className = "history-transaction-total";
+    total.textContent = formatPrice(transaction.totalInCents);
+
+    button.append(reference, date, total);
+    listItem.append(button);
+    historyList.append(listItem);
+  }
+}
+
+function showTransactionDetails(transaction) {
+  historyPrompt.hidden = true;
+  historyDetailContent.hidden = false;
+  document.getElementById("history-reference").textContent =
+    transaction.reference;
+  document.getElementById("history-date").textContent =
+    transaction.date.toLocaleString();
+  document.getElementById("history-total").textContent = formatPrice(
+    transaction.totalInCents,
+  );
+  document.getElementById("history-method").textContent = transaction.method;
+  document.getElementById("history-amount-paid").textContent = formatPrice(
+    transaction.amountPaidInCents,
+  );
+  document.getElementById("history-change").textContent = formatPrice(
+    transaction.changeInCents,
+  );
+  document.getElementById("history-status").textContent = transaction.status;
+
+  historyItems.replaceChildren();
+
+  for (const product of transaction.items) {
+    historyItems.append(createReceiptRow(product));
+  }
+}
+
+function showTransactionHistory() {
+  renderTransactionHistory();
+  itemSelectionView.hidden = true;
+  transactionHistoryView.hidden = false;
+  document.getElementById("transaction-history-heading").focus();
+}
+
+function returnToItemSelectionFromHistory() {
+  transactionHistoryView.hidden = true;
+  itemSelectionView.hidden = false;
+  transactionHistoryButton.focus();
+}
+
 function handleCashPayment(event) {
   event.preventDefault();
 
@@ -538,6 +629,36 @@ document.getElementById("confirm-qr-payment").addEventListener("click", () => {
 processCardButton.addEventListener("click", processCardPayment);
 viewReceiptButton.addEventListener("click", showReceipt);
 newTransactionButton.addEventListener("click", startNewTransaction);
+transactionHistoryButton.addEventListener("click", showTransactionHistory);
+backFromHistoryButton.addEventListener(
+  "click",
+  returnToItemSelectionFromHistory,
+);
+
+historyList.addEventListener("click", (event) => {
+  const button = event.target.closest("button[data-reference]");
+
+  if (!button || !historyList.contains(button)) {
+    return;
+  }
+
+  const transaction = transactionHistory.find(
+    (record) => record.reference === button.dataset.reference,
+  );
+
+  if (!transaction) {
+    return;
+  }
+
+  for (const historyButton of historyList.querySelectorAll(
+    ".history-transaction-button",
+  )) {
+    historyButton.setAttribute("aria-current", "false");
+  }
+
+  button.setAttribute("aria-current", "true");
+  showTransactionDetails(transaction);
+});
 
 for (const option of paymentOptions) {
   option.addEventListener("click", () => {
