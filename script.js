@@ -8,7 +8,30 @@ const summaryTotal = document.getElementById("summary-total");
 const summaryFeedback = document.getElementById("summary-feedback");
 const proceedButton = document.getElementById("proceed-button");
 const backButton = document.getElementById("back-to-items");
+const continueToPaymentButton = document.getElementById("continue-to-payment");
+const paymentView = document.getElementById("payment-view");
+const paymentSuccessView = document.getElementById("payment-success");
+const paymentOptions = document.querySelectorAll(".payment-option");
+const paymentPanels = {
+  cash: document.getElementById("cash-payment-panel"),
+  qr: document.getElementById("qr-payment-panel"),
+  card: document.getElementById("card-payment-panel"),
+};
+const cashPaymentForm = document.getElementById("cash-payment-form");
+const cashPaymentInput = document.getElementById("amount-paid");
+const cashFeedback = document.getElementById("cash-feedback");
+const cardProcessingMessage = document.getElementById(
+  "card-processing-message",
+);
+const processCardButton = document.getElementById("process-card-payment");
+const backToSummaryButton = document.getElementById("back-to-summary");
 const cart = new Map();
+const paymentDetails = {
+  method: null,
+  amountPaidInCents: 0,
+  changeInCents: 0,
+};
+let cardProcessingTimer = null;
 
 function formatPrice(amountInCents) {
   return `₱${(amountInCents / 100).toFixed(2)}`;
@@ -102,8 +125,6 @@ function createCartButton(label, action, productId) {
 function renderCart() {
   cartItems.replaceChildren();
 
-  let totalInCents = 0;
-
   if (cart.size === 0) {
     const emptyMessage = document.createElement("li");
     emptyMessage.className = "cart-empty";
@@ -112,14 +133,23 @@ function renderCart() {
     cartItems.append(emptyMessage);
   } else {
     for (const [productId, product] of cart) {
-      totalInCents += product.unitPriceInCents * product.quantity;
       cartItems.append(createCartItem(productId, product));
     }
   }
 
-  orderTotal.textContent = formatPrice(totalInCents);
+  orderTotal.textContent = formatPrice(calculateCartTotalInCents());
   summaryFeedback.hidden = true;
   summaryFeedback.textContent = "";
+}
+
+function calculateCartTotalInCents() {
+  let totalInCents = 0;
+
+  for (const product of cart.values()) {
+    totalInCents += product.unitPriceInCents * product.quantity;
+  }
+
+  return totalInCents;
 }
 
 function createSummaryItem(product) {
@@ -147,14 +177,11 @@ function createSummaryItem(product) {
 function renderOrderSummary() {
   summaryItems.replaceChildren();
 
-  let totalInCents = 0;
-
   for (const product of cart.values()) {
-    totalInCents += product.unitPriceInCents * product.quantity;
     summaryItems.append(createSummaryItem(product));
   }
 
-  summaryTotal.textContent = formatPrice(totalInCents);
+  summaryTotal.textContent = formatPrice(calculateCartTotalInCents());
 }
 
 function showOrderSummary() {
@@ -175,6 +202,152 @@ function returnToItemSelection() {
   orderSummary.hidden = true;
   itemSelectionView.hidden = false;
   proceedButton.focus();
+}
+
+function updatePaymentAmounts() {
+  const formattedTotal = formatPrice(calculateCartTotalInCents());
+  document.getElementById("cash-total").textContent = formattedTotal;
+  document.getElementById("qr-total").textContent = formattedTotal;
+  document.getElementById("card-total").textContent = formattedTotal;
+}
+
+function showPaymentView() {
+  if (cart.size === 0) {
+    orderSummary.hidden = true;
+    itemSelectionView.hidden = false;
+    summaryFeedback.textContent =
+      "Your order is empty. Select at least one item before continuing.";
+    summaryFeedback.hidden = false;
+    return;
+  }
+
+  updatePaymentAmounts();
+  orderSummary.hidden = true;
+  paymentView.hidden = false;
+  document.getElementById("payment-heading").focus();
+}
+
+function selectPaymentMethod(method) {
+  if (!paymentPanels[method] || cardProcessingTimer !== null) {
+    return;
+  }
+
+  paymentDetails.method = method;
+  paymentDetails.amountPaidInCents = 0;
+  paymentDetails.changeInCents = 0;
+  cashFeedback.hidden = true;
+  cashFeedback.textContent = "";
+  cardProcessingMessage.hidden = true;
+  cardProcessingMessage.textContent = "";
+
+  for (const option of paymentOptions) {
+    const isSelected = option.dataset.paymentMethod === method;
+    option.setAttribute("aria-pressed", String(isSelected));
+  }
+
+  for (const [panelMethod, panel] of Object.entries(paymentPanels)) {
+    panel.hidden = panelMethod !== method;
+  }
+}
+
+function completePayment(method, amountPaidInCents, changeInCents) {
+  paymentDetails.method = method;
+  paymentDetails.amountPaidInCents = amountPaidInCents;
+  paymentDetails.changeInCents = changeInCents;
+
+  document.getElementById("success-method").textContent = method;
+  document.getElementById("success-total").textContent = formatPrice(
+    calculateCartTotalInCents(),
+  );
+  document.getElementById("success-amount-paid").textContent =
+    formatPrice(amountPaidInCents);
+  document.getElementById("success-change").textContent =
+    formatPrice(changeInCents);
+
+  paymentView.hidden = true;
+  paymentSuccessView.hidden = false;
+  document.getElementById("payment-success-heading").focus();
+}
+
+function handleCashPayment(event) {
+  event.preventDefault();
+
+  const amountText = cashPaymentInput.value.trim();
+
+  if (cashPaymentInput.validity.badInput || !amountText) {
+    cashFeedback.textContent = amountText
+      ? "Enter a valid amount."
+      : "Enter the amount paid.";
+    cashFeedback.hidden = false;
+    return;
+  }
+
+  const amountPaid = Number(amountText);
+
+  if (
+    !Number.isFinite(amountPaid) ||
+    amountPaid < 0 ||
+    cashPaymentInput.validity.stepMismatch
+  ) {
+    cashFeedback.textContent = "Enter a valid non-negative amount.";
+    cashFeedback.hidden = false;
+    return;
+  }
+
+  const amountPaidInCents = Math.round(amountPaid * 100);
+  const totalInCents = calculateCartTotalInCents();
+
+  if (amountPaidInCents < totalInCents) {
+    cashFeedback.textContent = `Insufficient payment. Please enter at least ${formatPrice(totalInCents)}.`;
+    cashFeedback.hidden = false;
+    return;
+  }
+
+  completePayment("Cash", amountPaidInCents, amountPaidInCents - totalInCents);
+}
+
+function cancelCardProcessing() {
+  if (cardProcessingTimer === null) {
+    return;
+  }
+
+  window.clearTimeout(cardProcessingTimer);
+  cardProcessingTimer = null;
+  processCardButton.disabled = false;
+  processCardButton.textContent = "Process Payment";
+  cardProcessingMessage.hidden = true;
+  cardProcessingMessage.textContent = "";
+
+  for (const option of paymentOptions) {
+    option.disabled = false;
+  }
+}
+
+function processCardPayment() {
+  if (paymentDetails.method !== "card" || cardProcessingTimer !== null) {
+    return;
+  }
+
+  processCardButton.disabled = true;
+  processCardButton.textContent = "Processing...";
+  cardProcessingMessage.textContent = "Processing simulated card payment...";
+  cardProcessingMessage.hidden = false;
+
+  for (const option of paymentOptions) {
+    option.disabled = true;
+  }
+
+  cardProcessingTimer = window.setTimeout(() => {
+    cardProcessingTimer = null;
+    completePayment("Credit/Debit Card", calculateCartTotalInCents(), 0);
+  }, 1000);
+}
+
+function returnToOrderSummary() {
+  cancelCardProcessing();
+  paymentView.hidden = true;
+  orderSummary.hidden = false;
+  document.getElementById("summary-heading").focus();
 }
 
 productList.addEventListener("click", (event) => {
@@ -215,3 +388,18 @@ cartItems.addEventListener("click", (event) => {
 
 proceedButton.addEventListener("click", showOrderSummary);
 backButton.addEventListener("click", returnToItemSelection);
+continueToPaymentButton.addEventListener("click", showPaymentView);
+backToSummaryButton.addEventListener("click", returnToOrderSummary);
+cashPaymentForm.addEventListener("submit", handleCashPayment);
+document.getElementById("confirm-qr-payment").addEventListener("click", () => {
+  if (paymentDetails.method === "qr") {
+    completePayment("QR Payment", calculateCartTotalInCents(), 0);
+  }
+});
+processCardButton.addEventListener("click", processCardPayment);
+
+for (const option of paymentOptions) {
+  option.addEventListener("click", () => {
+    selectPaymentMethod(option.dataset.paymentMethod);
+  });
+}
