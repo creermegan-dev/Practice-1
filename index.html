@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Campus Store POS</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <h1>Campus Store POS</h1>
+    </header>
+
+    <main class="pos-layout">
+      <section class="item-selection" aria-labelledby="selection-heading">
+        <h2 id="selection-heading">Select an item</h2>
+        <p class="selection-instruction">
+          Tap a product to add it to your order.
+        </p>
+
+        <div class="product-grid" id="product-list">
+          <button
+            class="product-card"
+            id="product-coffee"
+            type="button"
+            data-product-id="coffee"
+            data-price="45.00"
+          >
+            <span class="product-name">Coffee</span>
+            <span class="product-price">₱45.00</span>
+          </button>
+          <button
+            class="product-card"
+            id="product-sandwich"
+            type="button"
+            data-product-id="sandwich"
+            data-price="50.00"
+          >
+            <span class="product-name">Sandwich</span>
+            <span class="product-price">₱50.00</span>
+          </button>
+          <button
+            class="product-card"
+            id="product-soft-drink"
+            type="button"
+            data-product-id="soft-drink"
+            data-price="35.00"
+          >
+            <span class="product-name">Soft Drink</span>
+            <span class="product-price">₱35.00</span>
+          </button>
+          <button
+            class="product-card"
+            id="product-cookies"
+            type="button"
+            data-product-id="cookies"
+            data-price="25.00"
+          >
+            <span class="product-name">Cookies</span>
+            <span class="product-price">₱25.00</span>
+          </button>
+          <button
+            class="product-card"
+            id="product-bottled-water"
+            type="button"
+            data-product-id="bottled-water"
+            data-price="20.00"
+          >
+            <span class="product-name">Bottled Water</span>
+            <span class="product-price">₱20.00</span>
+          </button>
+          <button
+            class="product-card"
+            id="product-chocolate"
+            type="button"
+            data-product-id="chocolate"
+            data-price="25.00"
+          >
+            <span class="product-name">Chocolate</span>
+            <span class="product-price">₱25.00</span>
+          </button>
+        </div>
+      </section>
+
+      <aside class="order-cart" aria-labelledby="cart-heading">
+        <h2 id="cart-heading">Your Order</h2>
+        <ul class="cart-items" id="cart-items" aria-live="polite">
+          <li class="cart-empty" id="cart-empty">No items selected.</li>
+        </ul>
+        <p class="cart-total">Total: <span id="order-total">₱0.00</span></p>
+        <button class="proceed-button" id="proceed-button" type="button">
+          Proceed to Order Summary
+        </button>
+      </aside>
+    </main>
+  </body>
+</html>
