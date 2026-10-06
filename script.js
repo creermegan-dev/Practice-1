@@ -40,6 +40,8 @@ const historyItems = document.getElementById("history-items");
 const backFromHistoryButton = document.getElementById("back-from-history");
 const cart = new Map();
 const transactionHistory = [];
+const EMPTY_ORDER_MESSAGE =
+  "Your order is empty. Select at least one item before continuing.";
 const paymentDetails = {
   method: null,
   amountPaidInCents: 0,
@@ -51,6 +53,11 @@ let transactionSequence = 0;
 
 function formatPrice(amountInCents) {
   return `₱${(amountInCents / 100).toFixed(2)}`;
+}
+
+function setFeedback(element, message) {
+  element.textContent = message;
+  element.hidden = message.length === 0;
 }
 
 function generateTransactionReference() {
@@ -160,8 +167,7 @@ function renderCart() {
   }
 
   orderTotal.textContent = formatPrice(calculateCartTotalInCents());
-  summaryFeedback.hidden = true;
-  summaryFeedback.textContent = "";
+  setFeedback(summaryFeedback, "");
 }
 
 function calculateCartTotalInCents() {
@@ -208,9 +214,7 @@ function renderOrderSummary() {
 
 function showOrderSummary() {
   if (cart.size === 0) {
-    summaryFeedback.textContent =
-      "Your order is empty. Select at least one item before continuing.";
-    summaryFeedback.hidden = false;
+    setFeedback(summaryFeedback, EMPTY_ORDER_MESSAGE);
     return;
   }
 
@@ -237,9 +241,7 @@ function showPaymentView() {
   if (cart.size === 0) {
     orderSummary.hidden = true;
     itemSelectionView.hidden = false;
-    summaryFeedback.textContent =
-      "Your order is empty. Select at least one item before continuing.";
-    summaryFeedback.hidden = false;
+    setFeedback(summaryFeedback, EMPTY_ORDER_MESSAGE);
     return;
   }
 
@@ -257,10 +259,8 @@ function selectPaymentMethod(method) {
   paymentDetails.method = method;
   paymentDetails.amountPaidInCents = 0;
   paymentDetails.changeInCents = 0;
-  cashFeedback.hidden = true;
-  cashFeedback.textContent = "";
-  cardProcessingMessage.hidden = true;
-  cardProcessingMessage.textContent = "";
+  setFeedback(cashFeedback, "");
+  setFeedback(cardProcessingMessage, "");
 
   for (const option of paymentOptions) {
     const isSelected = option.dataset.paymentMethod === method;
@@ -379,10 +379,8 @@ function startNewTransaction() {
   summaryItems.replaceChildren();
   summaryTotal.textContent = formatPrice(0);
   cashPaymentInput.value = "";
-  cashFeedback.textContent = "";
-  cashFeedback.hidden = true;
-  cardProcessingMessage.textContent = "";
-  cardProcessingMessage.hidden = true;
+  setFeedback(cashFeedback, "");
+  setFeedback(cardProcessingMessage, "");
   processCardButton.disabled = false;
   processCardButton.textContent = "Process Payment";
 
@@ -505,10 +503,10 @@ function handleCashPayment(event) {
   const amountText = cashPaymentInput.value.trim();
 
   if (cashPaymentInput.validity.badInput || !amountText) {
-    cashFeedback.textContent = amountText
-      ? "Enter a valid amount."
-      : "Enter the amount paid.";
-    cashFeedback.hidden = false;
+    setFeedback(
+      cashFeedback,
+      amountText ? "Enter a valid amount." : "Enter the amount paid.",
+    );
     return;
   }
 
@@ -519,8 +517,7 @@ function handleCashPayment(event) {
     amountPaid < 0 ||
     cashPaymentInput.validity.stepMismatch
   ) {
-    cashFeedback.textContent = "Enter a valid non-negative amount.";
-    cashFeedback.hidden = false;
+    setFeedback(cashFeedback, "Enter a valid non-negative amount.");
     return;
   }
 
@@ -528,8 +525,10 @@ function handleCashPayment(event) {
   const totalInCents = calculateCartTotalInCents();
 
   if (amountPaidInCents < totalInCents) {
-    cashFeedback.textContent = `Insufficient payment. Please enter at least ${formatPrice(totalInCents)}.`;
-    cashFeedback.hidden = false;
+    setFeedback(
+      cashFeedback,
+      `Insufficient payment. Please enter at least ${formatPrice(totalInCents)}.`,
+    );
     return;
   }
 
@@ -545,8 +544,7 @@ function cancelCardProcessing() {
   cardProcessingTimer = null;
   processCardButton.disabled = false;
   processCardButton.textContent = "Process Payment";
-  cardProcessingMessage.hidden = true;
-  cardProcessingMessage.textContent = "";
+  setFeedback(cardProcessingMessage, "");
 
   for (const option of paymentOptions) {
     option.disabled = false;
@@ -560,8 +558,7 @@ function processCardPayment() {
 
   processCardButton.disabled = true;
   processCardButton.textContent = "Processing...";
-  cardProcessingMessage.textContent = "Processing simulated card payment...";
-  cardProcessingMessage.hidden = false;
+  setFeedback(cardProcessingMessage, "Processing simulated card payment...");
 
   for (const option of paymentOptions) {
     option.disabled = true;
