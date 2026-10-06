@@ -12,7 +12,8 @@
       <h1>Campus Store POS</h1>
     </header>
 
-    <main class="pos-layout">
+    <main>
+      <div class="pos-layout" id="item-selection-view">
       <section class="item-selection" aria-labelledby="selection-heading">
         <h2 id="selection-heading">Select an item</h2>
         <p class="selection-instruction">
@@ -93,6 +94,30 @@
           Proceed to Order Summary
         </button>
       </aside>
+      </div>
+
+      <section
+        class="order-summary"
+        id="order-summary"
+        aria-labelledby="summary-heading"
+        hidden
+      >
+        <h2 id="summary-heading" tabindex="-1">Order Summary</h2>
+        <p class="summary-instruction">Review your items before continuing.</p>
+        <ul class="summary-items" id="summary-items"></ul>
+        <p class="summary-total">
+          Total: <span id="summary-total">₱0.00</span>
+        </p>
+        <p class="summary-feedback" id="summary-feedback" role="status" hidden></p>
+        <div class="summary-actions">
+          <button class="secondary-button" id="back-to-items" type="button">
+            Back
+          </button>
+          <button class="proceed-button" id="continue-to-payment" type="button">
+            Continue to Payment
+          </button>
+        </div>
+      </section>
     </main>
   </body>
 </html>
